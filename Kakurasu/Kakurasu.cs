@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using static Kakurasu.ArrayConverter;
 using static System.Math;
-using static System.Console;
 
 namespace Kakurasu
 {
@@ -17,7 +16,7 @@ namespace Kakurasu
         public int RowCount => _rowsNumbers.Length;
         public int ColCount => _colsNumbers.Length;
 
-        public Kakurasu( int[] rowsNumbers, int[] colsNumbers )
+        public Kakurasu ( int[] rowsNumbers, int[] colsNumbers )
         {
             if ( rowsNumbers is null || colsNumbers is null )
             {
@@ -35,7 +34,7 @@ namespace Kakurasu
             _colsNumbers = colsNumbers;
         }
 
-        public bool[,] Solve()
+        public bool[,] Solve ()
         {
             var listAllSolutions = GenerateListSolutions();
             List<List<int>> allRowsSolutions = null, allColsSolutions = null;
@@ -43,10 +42,10 @@ namespace Kakurasu
             FilterSolutionsByNumbers();
             return MergeSolution();
 
-            List<int>[] GenerateListSolutions()
+            List<int>[] GenerateListSolutions ()
             {
                 long count = RowCount > ColCount ? RowCount : ColCount;
-                long rowCount = ( long ) Pow( 2, count ) - 1;
+                var rowCount = ( long ) Pow( 2, count ) - 1;
                 var listVariants = new List<int>[ rowCount ];
                 var binNumber = new BinNumber( 1 );
 
@@ -57,7 +56,7 @@ namespace Kakurasu
 
                 return listVariants;
 
-                List<int> AddVariant( long row )
+                List<int> AddVariant ( long row )
                 {
                     var variant = new List<int>( binNumber.Count );
 
@@ -73,11 +72,11 @@ namespace Kakurasu
                 }
             }
 
-            void DistributeAllSolutionsByItems()
+            void DistributeAllSolutionsByItems ()
             {
                 Parallel.Invoke( () => FindAllRowsSolutions(), () => FindAllColsSolutions() );
 
-                void FindAllRowsSolutions()
+                void FindAllRowsSolutions ()
                 {
                     allRowsSolutions = new List<List<int>>();
 
@@ -99,7 +98,7 @@ namespace Kakurasu
                         }
                     }
 
-                    List<int> CompileSolution( List<int> numbers )
+                    List<int> CompileSolution ( List<int> numbers )
                     {
                         var solution = new List<int>();
                         int col;
@@ -118,10 +117,10 @@ namespace Kakurasu
                     }
                 }
 
-                void FindAllColsSolutions()
+                void FindAllColsSolutions ()
                 {
                     allColsSolutions = new List<List<int>>();
-                    
+
                     foreach ( var colNumber in _colsNumbers )
                     {
                         if ( colNumber > 0 )
@@ -140,7 +139,7 @@ namespace Kakurasu
                         }
                     }
 
-                    List<int> CompileSolution( List<int> numbers )
+                    List<int> CompileSolution ( List<int> numbers )
                     {
                         var solution = new List<int>();
                         int col;
@@ -160,11 +159,11 @@ namespace Kakurasu
                 }
             }
 
-            void FilterSolutionsByNumbers()
+            void FilterSolutionsByNumbers ()
             {
                 Parallel.Invoke( () => FilterRowsSolutions(), () => FilterColsSolutions() );
 
-                void FilterRowsSolutions()
+                void FilterRowsSolutions ()
                 {
                     foreach ( var number in _colsNumbers )
                     {
@@ -181,7 +180,7 @@ namespace Kakurasu
                     }
                 }
 
-                void FilterColsSolutions()
+                void FilterColsSolutions ()
                 {
                     foreach ( var number in _rowsNumbers )
                     {
@@ -199,13 +198,13 @@ namespace Kakurasu
                 }
             }
 
-            bool[,] MergeSolution()
+            bool[,] MergeSolution ()
             {
                 _solve = new bool[ RowCount, ColCount ];
                 Parallel.Invoke( () => AddRowsSolution(), () => AddColsSolution() );
                 return _solve;
 
-                void AddRowsSolution()
+                void AddRowsSolution ()
                 {
                     int i, j;
                     int col;
@@ -219,11 +218,11 @@ namespace Kakurasu
                                 col = allRowsSolutions[ i ][ j ] - 1;
                                 _solve[ i, col ] = true;
                             }
-                        }                        
+                        }
                     }
                 }
 
-                void AddColsSolution()
+                void AddColsSolution ()
                 {
                     int i, j;
                     int row;
@@ -243,7 +242,7 @@ namespace Kakurasu
             }
         }
 
-        public bool IsCorrectSolution()
+        public bool IsCorrectSolution ()
         {
             if ( _solve is null )
             {
@@ -255,7 +254,7 @@ namespace Kakurasu
             Parallel.Invoke( () => CheckingRows(), () => CheckingCols() );
             return isCorrectRows == true && isCorrectCols == true;
 
-            void CheckingRows()
+            void CheckingRows ()
             {
                 int i, j;
                 int sum, countCorrectRows;
@@ -273,7 +272,7 @@ namespace Kakurasu
                 isCorrectRows = countCorrectRows == RowCount;
             }
 
-            void CheckingCols()
+            void CheckingCols ()
             {
                 int i, j;
                 int sum, countCorrectCols;
@@ -292,7 +291,7 @@ namespace Kakurasu
             }
         }
 
-        public override string ToString()
+        public override string ToString ()
         {
             return Convert( _solve, ( i ) => i ? '█' : ' ' );
         }
